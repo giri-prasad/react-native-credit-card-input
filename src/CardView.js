@@ -1,3 +1,4 @@
+import valid from "card-validator";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {
@@ -113,7 +114,9 @@ export default class CardView extends Component {
     const { focused,
       brand, name, number, expiry, cvc, customIcons,
       placeholder, imageFront, imageBack, scale, fontFamily } = this.props;
-
+      
+    const FALLBACK_CARD = { gaps: [4, 8, 12], lengths: [16], code: { size: 3 } };
+    const card = valid.number(number).card || FALLBACK_CARD;
     const Icons = { ...defaultIcons, ...customIcons };
     const isAmex = brand === "american-express";
     const shouldFlip = !isAmex && focused === "cvc";
@@ -136,7 +139,8 @@ export default class CardView extends Component {
           <ImageBackground style={[BASE_SIZE, s.cardFace, transform]}
             source={imageFront}>
               <Image style={[s.icon]}
-                source={Icons[brand]} />
+                // source={Icons[brand]} />
+                source={Icons[ brand || card.type]} />
               <Text style={[s.baseText, { fontFamily }, s.number, !number && s.placeholder, focused === "number" && s.focused]}>
                 { !number ? placeholder.number : number }
               </Text>
